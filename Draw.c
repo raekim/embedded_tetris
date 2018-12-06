@@ -26,7 +26,8 @@ void draw_game_board(Game *g) {
 		for (j = 0; j < 4; ++j) {
 			if (0 <= i + block_i && i + block_i< 10 && 0 <= j + block_j && j + block_j < 7) {
 				c = (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) ? '*' : '.';
-				draw_board[i + block_i][j + block_j] = c; 
+				if(c == '*')
+					draw_board[i + block_i][j + block_j] = c; 
 			}
 		}
 	}

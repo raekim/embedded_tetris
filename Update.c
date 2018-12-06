@@ -4,7 +4,8 @@
 
 void Update(Game *g) {
 	
-	update_block_info(g);
+	update_block_info(g);	// 사용자 인풋에 따라 블록 움직임
+	handle_block_collision(g);	// 블록이 땅에 닿거나 다 떨어지면 알맞은 작업 수행
 	//add_current_block_to_board(g);
 }
 
@@ -64,6 +65,65 @@ int check_block_info(int ni, int nj, int nr, Game *g) {
 
 	// 모든 기준을 통과했으므로 합격임(1 리턴)
 	return 1;
+}
+
+void handle_block_collision(Game *g) {
+	int i, j;
+
+	// 블록이 땅에 닿았나? 혹은 다른 블록의 위에 착지하는 상황인가?
+	for (i = 0; i < 4; ++i) {
+		for (j = 0; j < 4; ++j) {
+			if (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) {
+				// 블록이 땅에 착지하는 상황
+				if (g->cur_block_i + i == 9) {
+					// 블록 얼어붙게 만들기(게임보드에 고정)
+					freeze_cur_block(g);
+					// 다음 블록으로 갱신
+					new_block_falls(g);
+				}
+				// 블록이 다른 블록의 위에 착지하는 상황
+				// 블록이 사용자 인풋에 의하여 기존 블록과 겹치는 일은 발생하지 않으므로(예외처리), 겹친다는 것은 자동적으로 떨어짐에 의한 것임. 인덱스를 하나 위로 올린 다음 얼어붙게 해야 함(그렇지 않으면 진짜 겹쳐버리기 때문에)
+				else if (g->game_board[g->cur_block_i + i][g->cur_block_j + j] == 1) {
+					// 블록을 한 칸 올린 후 얼어붙게 만들기
+					g->cur_block_i--;
+					freeze_cur_block(g);
+					// 다음 블록으로 갱신
+					new_block_falls(g);
+				}
+			}
+		}
+	}
+
+	// 점수 계산 함수 호출. 점수 득점이 가능한가 확인하고 점수 변경
+}
+
+void new_block_falls(Game *g) {
+	g->cur_block_idx = g->next_block_idx;	// 다음 블록이 현재 블록이 된다.
+	g->cur_block_rotate_idx = 0;	// 처음 회전 정보로 초기화
+	// 블록의 시작 좌표 초기화
+	g->cur_block_i = 0;
+	g->cur_block_j = 4;
+
+	// 새로운 '다음 블록'이 랜덤하게 설정됨.
+	g->next_block_idx = rand() % 7;
+}
+
+void freeze_cur_block(Game *g) {
+	int i, j;
+	int block_i = g->cur_block_i;
+	int block_j = g->cur_block_j;
+	char c;
+
+	// 게임판에 현재 블록을 각인시킴(현재 블록이 배경 블록이 된다)
+	for (i = 0; i < 4; ++i) {
+		for (j = 0; j < 4; ++j) {
+			if (0 <= i + block_i && i + block_i< 10 && 0 <= j + block_j && j + block_j < 7){
+				if (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) {
+					g->game_board[i + block_i][j + block_j] = blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j];
+				}
+			}
+		}
+	}
 }
 
 /*
