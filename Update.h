@@ -6,5 +6,5 @@ void update_block_info(Game *g);	// 입력을 바탕으로 현재 블록의 최�
 //void add_current_block_to_board(Game *g);	// 현재 블록의 좌표 바탕으로 게임 화면 갱신
 //void update_score(Game *g);	// 현재 보드를 바탕으로 점수 계산
 //void destroy_blocks(Game *g);	// 삭제 가능한 블록 줄이 있으면 파괴하고 게임보드 갱신
-
+int check_block_info(int ni, int nj, int nr, Game *g);	// 현재 블록의 업데이트 정보가 유효한지 체크 (유효시 1 리턴)
 #endif
