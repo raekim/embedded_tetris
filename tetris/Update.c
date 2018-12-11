@@ -110,7 +110,7 @@ void handle_block_collision(Game *g) {
 	}
 
 	// 점수 계산 함수 호출. 점수 득점이 가능한가 확인하고 점수 변경
-	//handle_scoring(g);
+	handle_scoring(g);
 }
 
 void new_block_falls(Game *g) {
@@ -184,7 +184,8 @@ void handle_scoring(Game *g){
 	}
 
 	// 공중에 떠 있는 조각들 바닥으로 보내기
-	for(i=9; i>0; --i){
+	/*
+	for(i=8; i>=0; --i){
 		for(j=0; j<7; ++j){
 			if(g->game_board[i][j] == 1 && g->game_board[i+1][j] == 0){	// 공중에 떠 있는 조각 발견
 				t = i;
@@ -196,4 +197,5 @@ void handle_scoring(Game *g){
 			}
 		}
 	}
+	*/
 }
