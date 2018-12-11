@@ -1,6 +1,7 @@
 #include "Input.h"
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include "console.h"
+
 void Input(Game *g) {
 	g->last_input = get_user_input();
 }

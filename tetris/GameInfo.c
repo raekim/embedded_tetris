@@ -1,4 +1,5 @@
 ﻿#include "GameInfo.h"
+#include "console.h"
 
 // 블록 이미지
 int blocks[7][4][4][4] = {	// [블록종류][회전index][4rows][4columns]

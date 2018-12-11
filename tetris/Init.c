@@ -1,6 +1,7 @@
 #include "Init.h"
 #include <time.h>
 #include <stdlib.h>
+#include "console.h"
 
 /* 게임 객체 초기화 */
 void Init(Game *g) {

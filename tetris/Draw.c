@@ -1,8 +1,7 @@
 #include "Draw.h"
 #include <stdio.h>
 #include "if_fpga_dot.h"
-
-#define CONSOLE_MODE	// 콘솔창 테스트용. 디바이스와 연결해서 실행 시 코멘트 처리하세요.
+#include "console.h"
 
 #ifdef CONSOLE_MODE
 	#define STAR ('*')

@@ -1,5 +1,4 @@
-#define CONSOLE_MODE	// 콘솔창 테스트용. 디바이스와 연결해서 실행 시 코멘트 처리하세요.
-
+#include "console.h"
 #include "Init.h"
 #include "Draw.h"
 #include "Input.h"
