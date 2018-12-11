@@ -59,6 +59,6 @@ void draw_next_block(Game *g) {
 #ifdef CONSOLE_MODE
 
 #else
-
+	light_led(blocks[g->cur_block_idx][g->cur_block_rotate_idx]);
 #endif
 }

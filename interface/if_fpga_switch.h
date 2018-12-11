@@ -8,7 +8,9 @@
 	int run_switch(void);		// 쓰레드 사용
 	int is_empty_switch_que(void);	// 눌린 인풋 큐 비었나
 	int size_switch_que(void);		// 눌린 인풋 큐 크기 
-	int read_switch_que(int *read);	// 눌린 인풋 큐에서 가져오기
+
+	// 눌린 인풋 큐에서 read에 저장해서 가져오기
+	int read_switch_que(int *read);	
 	int end_switch(void);
 
 #endif
