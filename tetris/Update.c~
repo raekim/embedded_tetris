@@ -184,6 +184,7 @@ void handle_scoring(Game *g){
 	}
 
 	// 공중에 떠 있는 조각들 바닥으로 보내기
+	/*
 	for(i=8; i>=0; --i){
 		for(j=0; j<7; ++j){
 			if(g->game_board[i][j] == 1 && g->game_board[i+1][j] == 0){	// 공중에 떠 있는 조각 발견
@@ -196,4 +197,5 @@ void handle_scoring(Game *g){
 			}
 		}
 	}
+	*/
 }

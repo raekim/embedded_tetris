@@ -122,6 +122,11 @@ void new_block_falls(Game *g) {
 
 	// 새로운 '다음 블록'이 랜덤하게 설정됨.
 	g->next_block_idx = rand() % 7;
+
+	// determining game over
+	if(check_block_info(g->cur_block_i, g->cur_block_j, g->cur_block_rotate_idx, g) == 0){
+		g->is_playing = 0;	// stop playing the game
+	}
 }
 
 void freeze_cur_block(Game *g) {
