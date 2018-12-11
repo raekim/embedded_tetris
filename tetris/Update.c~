@@ -1,8 +1,12 @@
 ﻿#include "Update.h"
 #include "GameInfo.h"
 #include <stdlib.h>
+<<<<<<< HEAD
 #include "console.h"
+=======
 #define LINE_SCORE 50	// 없어지는 블록 라인 당 점수
+>>>>>>> 5658ddb13eb3789765f8f3f06bb9cfb9a84f4e04
+// 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
 	g->cur_frame += 1;		// 프레임 증가

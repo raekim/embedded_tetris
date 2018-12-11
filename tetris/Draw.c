@@ -13,6 +13,9 @@
 #endif
 
 void Draw(Game *g) {
+#ifdef CONSOLE_MODE
+	printf("SCORE : %d\n", g->score);
+#endif
 	draw_game_board(g);
 }
 
