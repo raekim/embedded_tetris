@@ -12,6 +12,7 @@ typedef struct Game {
 	int last_input;			// 제일 최근에 받은 사용자 입력 정보(왼쪽,오른쪽,아래,회전 중 하나)
 	int game_board[10][7];		// 현재 게임 보드 (떨어지고 있는 블록 제외한 배경, 1또는 0)	
 	int next_block_idx;		// 다음 내려올 블록 인덱스(0-6)
+	int cur_frame;		// 현재 게임 프레임
 }Game;
 
 

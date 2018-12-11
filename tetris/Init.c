@@ -11,11 +11,12 @@ void Init(Game *g) {
 	g->score = 0;	
 	g->cur_block_idx = rand() % 7;
 	g->cur_block_rotate_idx = 0;
-	g->cur_block_i = 0;
-	g->cur_block_j = 4;
+	g->cur_block_i = -2;
+	g->cur_block_j = 3;
 	g->last_input = -1;
 	init_game_board(g->game_board);
 	g->next_block_idx = rand() % 7;
+	g->cur_frame = 0;
 }
 
 /* 게임 보드 초기화 */

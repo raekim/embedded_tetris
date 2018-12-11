@@ -4,10 +4,16 @@
 // 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
+	g->cur_frame += 1;		// 프레임 증가
 	
 	update_block_info(g);	// 사용자 인풋에 따라 블록 움직임
-	handle_block_collision(g);	// 블록이 땅에 닿거나 다 떨어지면 알맞은 작업 수행
-	//add_current_block_to_board(g);
+
+	if(g->cur_frame == 100){	// 1초당 자동으로 블록 떨어짐 처리
+		g->cur_block_i += 1;
+		g->cur_frame = 0;	// 프레임 초기화
+	}
+
+	handle_block_collision(g);	// 블록이 땅에 닿거나 다른 블록 위에 떨어지면 알맞은 작업 수행
 }
 
 void update_block_info(Game *g) {
@@ -102,8 +108,8 @@ void new_block_falls(Game *g) {
 	g->cur_block_idx = g->next_block_idx;	// 다음 블록이 현재 블록이 된다.
 	g->cur_block_rotate_idx = 0;	// 처음 회전 정보로 초기화
 	// 블록의 시작 좌표 초기화
-	g->cur_block_i = 0;
-	g->cur_block_j = 4;
+	g->cur_block_i = -2;
+	g->cur_block_j = 3;
 
 	// 새로운 '다음 블록'이 랜덤하게 설정됨.
 	g->next_block_idx = rand() % 7;
@@ -126,21 +132,3 @@ void freeze_cur_block(Game *g) {
 		}
 	}
 }
-
-/*
-void add_current_block_to_board(Game *g) {
-	int i, j;
-	int block_i, block_j;	// 떨어지고 있는 블록의 좌표
-
-	block_i = g->cur_block_i;
-	block_j = g->cur_block_j;
-
-	for (i = 0; i < 4; ++i) {
-		for (j = 0; j < 4; ++j) {
-			if (0 <= i + block_i && i + block_i< 10 && 0 <= j + block_j && j + block_j < 7) {
-				g->game_board[i + block_i][j + block_j] = blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j];
-			}
-		}
-	}
-}
-*/
