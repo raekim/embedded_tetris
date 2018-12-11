@@ -1,4 +1,5 @@
 ﻿#include "Draw.h"
+#include "if_fpga_dot.h"
 #include <stdio.h>
 void Draw(Game *g) {
 	draw_game_board(g);
@@ -13,7 +14,7 @@ void draw_game_board(Game *g) {
 	// 배경 그림
 	for (i = 0; i < 10; ++i) {
 		for (j = 0; j < 7; ++j) {
-			c = (g->game_board[i][j] == 1)? '*' : '.';
+			c = (g->game_board[i][j] == 1)? 1 : 0;
 			draw_board[i][j] = c;
 		}
 	}
@@ -25,20 +26,15 @@ void draw_game_board(Game *g) {
 	for (i = 0; i < 4; ++i) {
 		for (j = 0; j < 4; ++j) {
 			if (0 <= i + block_i && i + block_i< 10 && 0 <= j + block_j && j + block_j < 7) {
-				c = (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) ? '*' : '.';
-				if(c == '*')
+				c = (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) ? 1 : 0;
+				if(c == 1)
 					draw_board[i + block_i][j + block_j] = c; 
 			}
 		}
 	}
 
+	show_dot(draw_board);
 	// 최종 그림
-	for (i = 0; i < 10; ++i) {
-		for (j = 0; j < 7; ++j) {
-			printf("%c", draw_board[i][j]);
-		}
-		printf("\n");
-	}
 }
 
 void draw_next_block(Game *g) {

@@ -1,6 +1,0 @@
-﻿  Draw.c
-  Update.c
-c:\users\raeki\onedrive\desktop\embedded_tetris\embedded_tetris\update.c(108): warning C4013: 'rand' undefined; assuming extern returning int
-c:\users\raeki\onedrive\desktop\embedded_tetris\embedded_tetris\update.c(115): warning C4101: 'c': unreferenced local variable
-  Generating Code...
-  embedded_tetris.vcxproj -> C:\Users\raeki\OneDrive\Desktop\embedded_tetris\Debug\embedded_tetris.exe
