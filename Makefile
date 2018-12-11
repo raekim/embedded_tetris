@@ -17,6 +17,7 @@ EXE			:= tetris.out
 all: $(EXE)
 
 $(EXE):	$(TT_OBJS)
+	$(CC) -o $@ $^
 
 #all: $(IF_OBJS) $(TT_OBJS)
 
