@@ -1,6 +1,7 @@
 #include "Draw.h"
 #include <stdio.h>
 #include "if_fpga_dot.h"
+#include "if_fpga_led.h"
 #include "console.h"
 
 #ifdef CONSOLE_MODE
@@ -55,5 +56,9 @@ void draw_game_board(Game *g) {
 }
 
 void draw_next_block(Game *g) {
+#ifdef CONSOLE_MODE
 
+#else
+
+#endif
 }

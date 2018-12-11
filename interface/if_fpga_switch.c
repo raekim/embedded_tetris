@@ -32,6 +32,18 @@ int start_switch(void){
 	return switch_dev < 0 ? -1 : 0;
 }
 
+// 처음으로 버튼이 눌렸을 때 큐에 저장함
+// 000011111110000111
+//     ^          ^
+// 저기 둘이 버튼 눌린것으로 생각
+
+// 입력 받을시 입력 사이 시간이 짧으면 입력이 불안정함
+// 예시) 8번 버튼 누르면 0번 버튼에 입력이 있다고 나오는 경우
+// 안정적인 입력이 받게 하면 입력을 빠르게 받기 불가능
+// 그래서 짧은 입력을 여러번 받아서
+// 눌린 상태가 5번 나와야 버튼이 눌린것으로 해석
+// 눌린 버튼은 무조건 눌렸다고 나오는거 같아서
+// 5번 수치 조정해도 될듯
 void *capture_input_switch(void* arg){
 	unsigned char cur[FPGA_SWITCH_LEN];
 	int cnt[FPGA_SWITCH_LEN];
@@ -42,11 +54,7 @@ void *capture_input_switch(void* arg){
 	pthread_mutex_lock(&end_mutex);
 	while (!is_end){
 		pthread_mutex_unlock(&end_mutex);
-/*
-for (i = 0; i < FPGA_SWITCH_LEN; i++)
-printf("%d ", cur[i]);
-printf("\n");
-*/
+
 		read(switch_dev, &cur, sizeof(cur));
 
 		for (i = 0; i < FPGA_SWITCH_LEN; i++){
@@ -65,7 +73,6 @@ printf("\n");
 		}
 
 		usleep(1000);
-//		usleep(100000);
 
 		pthread_mutex_lock(&end_mutex);
 	}
@@ -77,6 +84,7 @@ printf("\n");
 	return 0;
 }
 
+// 쓰레드 실행
 int run_switch(void){
 	return pthread_create(&thread_id, NULL, capture_input_switch, NULL) == 0 ? 0 : -1;
 }
@@ -117,6 +125,7 @@ int read_switch_que(int *read){
 	return error_state;
 }
 
+// 쓰레드에 종료 요청 후 쓰레드 종료시 함수 종료
 int end_switch(void){
 	int tmp, tmp2;
 

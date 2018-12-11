@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include "console.h"
 #include <signal.h>
+#include "if_fpga_led.h"
+#include "if_fpga_dot.h"
+#include "if_fpga_fnd.h"
+#include "if_fpga_switch.h"
 
 /* 게임 객체 초기화 */
 void Init(Game *g) {
@@ -19,6 +23,17 @@ void Init(Game *g) {
 	init_game_board(g->game_board);
 	g->next_block_idx = rand() % 7;
 	g->cur_frame = 0;
+
+	// 장치들 초기화
+	#ifdef CONSOLE_MODE
+	#else
+	start_led();
+	start_dot();
+	start_fnd();
+	start_switch();
+
+	run_switch();
+	#endif
 }
 
 /* 게임 보드 초기화 */
@@ -37,3 +52,15 @@ void block_all_signal(void){
 	sigfillset(&mask);
 	sigprocmask(SIG_SETMASK, &mask, NULL);
 }
+
+// 게임 종료시 호출
+void Quit(Game *g){
+	#ifdef CONSOLE_MODE
+	#else
+	end_led();
+	end_dot();
+	end_fnd();
+	end_switch();
+	#endif
+}
+

@@ -26,5 +26,7 @@ int main(void) {
 		
 	}
 
+	Quit(&game);
+
 	return 0;
 }
