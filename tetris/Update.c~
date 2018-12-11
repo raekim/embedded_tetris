@@ -1,12 +1,8 @@
 ﻿#include "Update.h"
 #include "GameInfo.h"
 #include <stdlib.h>
-<<<<<<< HEAD
 #include "console.h"
-=======
 #define LINE_SCORE 50	// 없어지는 블록 라인 당 점수
->>>>>>> 5658ddb13eb3789765f8f3f06bb9cfb9a84f4e04
-// 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
 	g->cur_frame += 1;		// 프레임 증가
@@ -147,53 +143,57 @@ void freeze_cur_block(Game *g) {
 }
 
 // 현재 게임 판을 라인 별로 확인해서 스코어를 계산하고, 게임보드 갱신
-// 한 번의 업데이트마다 한 줄씩만 득점할 것(프레임마다 업데이트가 계속 돌기 때문에 프레임마다 블록들이 처리되는것과 같다.)
+//
 void handle_scoring(Game *g){
+	int score_line_num = 0;	// number of lines to destroy
 	int i,j,t;
-	int flag = 0;	// 득점 라인을 찾기 위한 플래그
+	int ni;
+	int flag = 0;	// is this line all 1s?
 	int score_line;	 // 없애야 할 라인
+	int new_board[10][7];	// game board after calculating scores
 
-	// 득점라인 확인(맨 밑줄에서부터 확인)
-	for(i=9; i>=0; --i){
+	// initialize new game board
+	init_game_board(new_board);
+
+	// copy the existing game board while tallying score_line_num
+	ni = 9;
+	for(i=9; i>=0; --i){	// start from bottom line
 		flag = 1;
 		for(j=0; j<7; ++j){
-			if(g->game_board[i][j] == 0){
+			new_board[ni][j] = g->game_board[i][j];
+			if(g->game_board[i][j] == 0)
 				flag = 0;
-				break;
-			}
 		}
-		if(flag == 1){	// 득점한 라인 하나 찾았음! 인덱스 i번째 라인임.
-			score_line = i;
-			break;
+		if(flag == 1){	// score!
+			score_line_num++;
 		}
+		else
+			ni--;
 	}
 
-	g->score += flag*LINE_SCORE;	// score 증가
-	/* 득점 후 게임보드 갱신 */
-	if(flag){
-		// 전체 보드 한 줄씩 땡기기
-		for(i=9; i>0; --i){
-			for(j=0; j<7; ++j){
-				g->game_board[i][j] = g->game_board[i-1][j];	// 윗 라인의 상황을 현재라인으로 복사
-			}
-		}
-		// 맨 윗라인 공백으로 채우기
+	// update the game board
+	for(i=0; i<10; ++i){
 		for(j=0; j<7; ++j)
-			g->game_board[0][j] = 0;
+			g->game_board[i][j] = new_board[i][j];
+	}
 
-		// 공중에 떠 있는 조각들 바닥으로 보내기
-		for(i=9; i>0; --i){
-			for(j=0; j<7; ++j){
-				if(g->game_board[i][j] == 1 && g->game_board[i+1][j] == 0){	// 공중에 떠 있는 조각 발견
-					t = i;
-					while(g->game_board[t+1][j] == 0){	// 조각 내리기
-						g->game_board[t+1][j] = g->game_board[t][j];
-						g->game_board[t][j] = 0;
-						t++;
-					}
+	// update score
+	g->score += score_line_num*LINE_SCORE;
+	if(score_line_num > 0){
+		// code for playing buzzer
+	}
+
+	// 공중에 떠 있는 조각들 바닥으로 보내기
+	for(i=9; i>0; --i){
+		for(j=0; j<7; ++j){
+			if(g->game_board[i][j] == 1 && g->game_board[i+1][j] == 0){	// 공중에 떠 있는 조각 발견
+				t = i;
+				while(g->game_board[t+1][j] == 0){	// 조각 내리기
+					g->game_board[t+1][j] = g->game_board[t][j];
+					g->game_board[t][j] = 0;
+					t++;
 				}
 			}
 		}
 	}
-
 }

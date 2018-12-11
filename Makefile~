@@ -2,7 +2,7 @@
 
 CC:=gcc
 #CC=arm-linux-gcc
-SRCS_FLGS	= -I$(IF_DIR) -static
+SRCS_FLGS	:= -I$(IF_DIR) -static
 
 IF_DIR 		:= interface
 IF_SRCS 	:= $(wildcard $(IF_DIR)/*.c)
