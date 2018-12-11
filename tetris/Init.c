@@ -46,10 +46,10 @@ void init_game_board(int (*board)[7]) {
 	}
 }
 
-//출처 : https://stackoverflow.com/questions/10046916/is-it-possible-to-ignore-all-signals
-void block_all_signal(void){
+void block_signals(void){
 	sigset_t mask;
 	sigfillset(&mask);
+	sigdelset(&mask, SIGINT);
 	sigprocmask(SIG_SETMASK, &mask, NULL);
 }
 
