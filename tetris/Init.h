@@ -3,4 +3,5 @@
 #include "GameInfo.h"
 void Init(Game *g);
 void init_game_board(int (*board)[7]);
+void block_all_signal(void);
 #endif

@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "console.h"
+#include <signal.h>
 
 /* 게임 객체 초기화 */
 void Init(Game *g) {
@@ -28,4 +29,11 @@ void init_game_board(int (*board)[7]) {
 			board[i][j] = 0;
 		}
 	}
+}
+
+//출처 : https://stackoverflow.com/questions/10046916/is-it-possible-to-ignore-all-signals
+void block_all_signal(void){
+	sigset_t mask;
+	sigfillset(&mask);
+	sigprocmask(SIG_SETMASK, &mask, NULL);
 }

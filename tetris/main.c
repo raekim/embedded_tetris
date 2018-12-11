@@ -11,6 +11,7 @@
 int main(void) {
 	Game game;
 
+	block_all_signal();
 	Init(&game);
 	/* Game Loop */;
 	while (game.is_playing) {
