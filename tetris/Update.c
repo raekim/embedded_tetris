@@ -1,7 +1,7 @@
 ﻿#include "Update.h"
 #include "GameInfo.h"
 #include <stdlib.h>
-#define LINE_SCORE	1000	// 없어지는 블록 라인 당 점수
+#define LINE_SCORE 50	// 없어지는 블록 라인 당 점수
 // 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
@@ -34,6 +34,12 @@ void update_block_info(Game *g) {
 		break;
 	case 3://down
 		new_i = g->cur_block_i + 1;
+		// 블록 위에 떨어지기
+		if (check_block_info(new_i, new_j, new_rot, g) == 0){
+			freeze_cur_block(g);
+			new_block_falls(g);
+			return;
+		}
 		break;
 	case 4://rotate
 		new_rot = (g->cur_block_rotate_idx + 1) % 4;
@@ -58,9 +64,9 @@ int check_block_info(int ni, int nj, int nr, Game *g) {
 	// 블록이 화면을 벗어나는지 체크
 	for (i = 0; i < 4; ++i) {
 		for (j = 0; j < 4; ++j) {
-			// 그려야 하는 부분(숫자 1로 표현)이 10X7 화면에서 왼쪽, 오른쪽, 아래를 벗어나면 안 됨
+			// 그려야 하는 부분(숫자 1로 표현)이 10X7 화면에서 왼쪽, 오른쪽을 벗어나면 안 됨
 			if (blocks[g->cur_block_idx][nr][i][j] == 1) {
-				if (i + ni >= 10 || j + nj < 0 || j + nj >= 7)
+				if (j + nj < 0 || j + nj >= 7)
 					return 0;
 				else {
 					// 블록이 기존 블록들과 겹치면 안 됨
@@ -157,11 +163,16 @@ void handle_scoring(Game *g){
 
 	g->score += score_line*LINE_SCORE;	// score 없어진 줄 만큼 증가
 	// 게임보드 밑으로 땡기기
-	while(score_line--){	// 득점한 라인 수 만큼 전체 게임 보드를 밑으로 땡긴다
-		for(i=9; i>0; --i){
-			for(j=0; j<7; ++j){
-			g->game_board[i][j] = g->game_board[i+1][j];
+	if(score_line > 0){
+		while(score_line--){	// 득점한 라인 수 만큼 전체 게임 보드를 밑으로 땡긴다
+			for(i=9; i>0; --i){
+				for(j=0; j<7; ++j)
+				g->game_board[i][j] = g->game_board[i-1][j];
 			}
+
+			for(j=0; j<7; ++j)
+				g->game_board[0][j] = 0;	// 맨 윗라인 지우기
 		}
 	}
+
 }
