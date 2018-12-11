@@ -2,6 +2,7 @@
 
 CC=gcc
 SRCS_FLGS	= -I$(IF_DIR)
+
 IF_DIR 		:= interface
 IF_SRCS 	:= $(wildcard $(IF_DIR)/*.c)
 IF_OBJS 	:= $(IF_SRCS:.c=.o)
@@ -12,12 +13,13 @@ TT_SRCS		:= $(wildcard $(TT_DIR)/*.c)
 TT_OBJS 	:= $(TT_SRCS:.c=.o)
 TT_DEPS		:= $(TT_SRCS:.c=.d)
 
-EXE			:= tetris.out
+EXE				:= tetris.out
+EXE_FLGS	:= -lpthread
 
 all: $(EXE)
 
-$(EXE):	$(TT_OBJS)
-	$(CC) -o $@ $^
+$(EXE):	$(TT_OBJS) $(IF_OBJS)
+	$(CC) -o $@ $^ $(EXE_FLGS)
 
 #all: $(IF_OBJS) $(TT_OBJS)
 

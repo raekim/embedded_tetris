@@ -1,5 +1,6 @@
 ﻿#include "Update.h"
 #include "GameInfo.h"
+#include <stdlib.h>
 // 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
