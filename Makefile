@@ -1,10 +1,8 @@
 #Makefile for a basic kernel module
 
-CC=gcc
-SRCS_FLGS	= -I$(IF_DIR)
-
-KDIR 	   :=/work/achro5250/kernel-20130306
-PWD  	   :=$(shell pwd)
+CC:=gcc
+#CC=arm-linux-gcc
+SRCS_FLGS	:= -I$(IF_DIR) -static
 
 IF_DIR 		:= interface
 IF_SRCS 	:= $(wildcard $(IF_DIR)/*.c)
@@ -17,22 +15,21 @@ TT_OBJS 	:= $(TT_SRCS:.c=.o)
 TT_DEPS		:= $(TT_SRCS:.c=.d)
 
 DD_DIR		:= driver
+MDIR  	    :=$(shell pwd)/$(DD_DIR)
 DD_SRCS		:= $(wildcard $(DD_DIR)/*.c)
-DD_OBJS		:= $(DD_SRCS:.c=.o)
+obj-m	:= $(DD_SRCS:.c=.o)
+KDIR 	   :=/work/achro5250/kernel-20130306
 
 INSTALL_DIR	:= /nfsroot
 
 EXE			:= tetris.out
 EXE_FLGS	:= -lpthread
-CONSOLE_EXE	:= tetris_console.out
-CONSOLE_FLGS = -DCONSOLE_MODE $(EXE_FLGS)
 
 all: $(EXE)
+#all: $(EXE) driver
 
-console: $(CONSOLE_EXE)
-
-$(CONSOLE_EXE): $(TT_OBJS) $(IF_OBJS)
-	$(CC) -o $@ $^ $(CONSOLE_FLGS)
+driver:
+ 	$(MAKE) -C $(KDIR) SUBDIRS=$(MDIR) modules ARCH=arm
 
 $(EXE):	$(TT_OBJS) $(IF_OBJS)
 	$(CC) -o $@ $^ $(EXE_FLGS)
@@ -48,49 +45,19 @@ test:
 install:
 	cp -a $(EXE) $(INSTALL_DIR)
 	cp -a mod_all.sh $(INSTALL_DIR)
+	cp -a $(DD_DIR)/*.ko $(INSTALL_DIR)
 
 clean:
-	-rm -rf $(EXE) $(CONSOLE_EXE)
+	-rm -rf $(EXE)
 	-rm -rf $(IF_OBJS) $(IF_DEPS)
 	-rm -rf $(TT_OBJS) $(TT_DEPS)
-	-rm -rf *.ko
-	-rm -rf *.mod.*
-	-rm -rf *.o
-	-rm -rf Module.symvers
-	-rm -rf modules.order
-	-rm -rf .led*
-	-rm -rf .tmp*
+	-rm -rf $(obj-m)	
+	-rm -rf $(DD_DIR)/*.ko
+	-rm -rf $(DD_DIR)/*.mod.*
+	-rm -rf $(DD_DIR)/Module.symvers
+	-rm -rf $(DD_DIR)/modules.order
+	-rm -rf $(DD_DIR)/.led*
+	-rm -rf $(DD_DIR)/.tmp*
 
 -include $(IF_DEPS) $(TT_DEPS)
 
-# obj-m   := fpga_led_driver.o fpga_dot_driver.o fpga_push_switch_driver.o
-
-# KDIR    :=/work/achro5250/kernel-20130306
-# PWD     :=$(shell pwd)
-
-# all: driver main
-
-# driver:
-# 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules ARCH=arm
-
-# main: main.o fpga_led_interface.o fpga_dot_interface.o fpga_switch_interface.o que.o Draw.o GameInfo.o Init.o Input.o Update.o
-# 	arm-linux-gcc -static -o $@ $^ -lpthread
-
-# que.o: que.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-
-
-# install:
-# 	cp -a fpga_led_driver.ko /nfsroot
-# 	cp -a fpga_dot_driver.ko /nfsroot
-# 	cp -a fpga_push_switch_driver.ko /nfsroot
-# 	cp -a main /nfsroot
-# 	cp -a mod_all.sh /nfsroot
-# clean:
-# 	rm -rf *.ko
-# 	rm -rf *.mod.*
-# 	rm -rf *.o
-# 	rm -rf Module.symvers
-# 	rm -rf modules.order
-# 	rm -rf .led*
-# 	rm -rf .tmp*
