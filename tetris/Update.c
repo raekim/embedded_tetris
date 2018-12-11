@@ -1,6 +1,7 @@
 ﻿#include "Update.h"
 #include "GameInfo.h"
 #include <stdlib.h>
+#define LINE_SCORE	1000	// 없어지는 블록 라인 당 점수
 // 블록 회전 시 충돌계산 할 것
 
 void Update(Game *g) {
@@ -8,7 +9,7 @@ void Update(Game *g) {
 	
 	update_block_info(g);	// 사용자 인풋에 따라 블록 움직임
 
-	if(g->cur_frame == 100){	// 1초당 자동으로 블록 떨어짐 처리
+	if(g->cur_frame == 300){	// 자동으로 블록 떨어짐 처리
 		g->cur_block_i += 1;
 		g->cur_frame = 0;	// 프레임 초기화
 	}
@@ -57,9 +58,9 @@ int check_block_info(int ni, int nj, int nr, Game *g) {
 	// 블록이 화면을 벗어나는지 체크
 	for (i = 0; i < 4; ++i) {
 		for (j = 0; j < 4; ++j) {
-			// 그려야 하는 부분(숫자 1로 표현)이 10X7 화면에서 벗어나면 안 됨
+			// 그려야 하는 부분(숫자 1로 표현)이 10X7 화면에서 왼쪽, 오른쪽, 아래를 벗어나면 안 됨
 			if (blocks[g->cur_block_idx][nr][i][j] == 1) {
-				if (i + ni < 0 || i + ni >= 10 || j + nj < 0 || j + nj >= 7)
+				if (i + ni >= 10 || j + nj < 0 || j + nj >= 7)
 					return 0;
 				else {
 					// 블록이 기존 블록들과 겹치면 안 됨
@@ -77,13 +78,14 @@ int check_block_info(int ni, int nj, int nr, Game *g) {
 void handle_block_collision(Game *g) {
 	int i, j;
 
-	// 블록이 땅에 닿았나? 혹은 다른 블록의 위에 착지하는 상황인가?
+	// 블록이 땅에 닿았나? 혹은 다른 블록의 위에 착지하는 상황인가? ( 땅에 닿는 것을 맨 밑 칸이 아니라 맨 밑 칸을 벗어나는 것으로 설정)
 	for (i = 0; i < 4; ++i) {
 		for (j = 0; j < 4; ++j) {
 			if (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) {
 				// 블록이 땅에 착지하는 상황
-				if (g->cur_block_i + i == 9) {
-					// 블록 얼어붙게 만들기(게임보드에 고정)
+				if (g->cur_block_i + i > 9) {
+					// 블록을 한 칸 올린 후 얼어붙게 만들기(게임보드에 고정)
+					g->cur_block_i--;
 					freeze_cur_block(g);
 					// 다음 블록으로 갱신
 					new_block_falls(g);
@@ -102,6 +104,7 @@ void handle_block_collision(Game *g) {
 	}
 
 	// 점수 계산 함수 호출. 점수 득점이 가능한가 확인하고 점수 변경
+	handle_scoring(g);
 }
 
 void new_block_falls(Game *g) {
@@ -128,6 +131,36 @@ void freeze_cur_block(Game *g) {
 				if (blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j] == 1) {
 					g->game_board[i + block_i][j + block_j] = blocks[g->cur_block_idx][g->cur_block_rotate_idx][i][j];
 				}
+			}
+		}
+	}
+}
+
+// 현재 게임 판을 라인 별로 확인해서 스코어를 계산하고, 게임보드 갱신
+void handle_scoring(Game *g){
+	int score_line = 0;	// 득점한 라인 수 
+	int i,j;
+	int is_this_line_score;	 // 현재 라인이 득점 라인인가?
+
+	// 몇 줄 없앴나 확인한다(맨 밑줄에서부터 확인)
+	for(i=9; i>=0; --i){
+		is_this_line_score = 1;
+		for(j=0; j<7; ++j){
+			if(g->game_board[i][j] == 0){
+				is_this_line_score = 0;
+				break;
+			}
+		}
+		if(is_this_line_score == 1)	// 득점한 라인 수 하나 증가
+			score_line++;
+	}
+
+	g->score += score_line*LINE_SCORE;	// score 없어진 줄 만큼 증가
+	// 게임보드 밑으로 땡기기
+	while(score_line--){	// 득점한 라인 수 만큼 전체 게임 보드를 밑으로 땡긴다
+		for(i=9; i>0; --i){
+			for(j=0; j<7; ++j){
+			g->game_board[i][j] = g->game_board[i+1][j];
 			}
 		}
 	}

@@ -16,7 +16,7 @@ int main(void) {
 	/* Game Loop */;
 	while (game.is_playing) {
 		Draw(&game);
-		//Input(&game);
+		Input(&game);
 		/* 1프레임 증가 */
 		usleep(1000);	// 1000 microsecond = 0.001 second
 		Update(&game);
