@@ -3,6 +3,9 @@
 CC=gcc
 SRCS_FLGS	= -I$(IF_DIR)
 
+KDIR 	   :=/work/achro5250/kernel-20130306
+PWD  	   :=$(shell pwd)
+
 IF_DIR 		:= interface
 IF_SRCS 	:= $(wildcard $(IF_DIR)/*.c)
 IF_OBJS 	:= $(IF_SRCS:.c=.o)
@@ -13,23 +16,50 @@ TT_SRCS		:= $(wildcard $(TT_DIR)/*.c)
 TT_OBJS 	:= $(TT_SRCS:.c=.o)
 TT_DEPS		:= $(TT_SRCS:.c=.d)
 
-EXE				:= tetris.out
+DD_DIR		:= driver
+DD_SRCS		:= $(wildcard $(DD_DIR)/*.c)
+DD_OBJS		:= $(DD_SRCS:.c=.o)
+
+INSTALL_DIR	:= /nfsroot
+
+EXE			:= tetris.out
 EXE_FLGS	:= -lpthread
+CONSOLE_EXE	:= tetris_console.out
+CONSOLE_FLGS = -DCONSOLE_MODE $(EXE_FLGS)
 
 all: $(EXE)
+
+console: $(CONSOLE_EXE)
+
+$(CONSOLE_EXE): $(TT_OBJS) $(IF_OBJS)
+	$(CC) -o $@ $^ $(CONSOLE_FLGS)
 
 $(EXE):	$(TT_OBJS) $(IF_OBJS)
 	$(CC) -o $@ $^ $(EXE_FLGS)
 
-#all: $(IF_OBJS) $(TT_OBJS)
-
 $(IF_OBJS) $(TT_OBJS):%.o:%.c
 	$(CC) -MMD -c $< -o $@ $(SRCS_FLGS)
 
-.PHONY: clean
+.PHONY: clean test install
+
+test:
+	echo $(PWD)
+
+install:
+	cp -a $(EXE) $(INSTALL_DIR)
+	cp -a mod_all.sh $(INSTALL_DIR)
 
 clean:
-	-rm -f $(IF_OBJS) $(IF_DEPS) $(TT_OBJS) $(TT_DEPS)
+	-rm -rf $(EXE) $(CONSOLE_EXE)
+	-rm -rf $(IF_OBJS) $(IF_DEPS)
+	-rm -rf $(TT_OBJS) $(TT_DEPS)
+	-rm -rf *.ko
+	-rm -rf *.mod.*
+	-rm -rf *.o
+	-rm -rf Module.symvers
+	-rm -rf modules.order
+	-rm -rf .led*
+	-rm -rf .tmp*
 
 -include $(IF_DEPS) $(TT_DEPS)
 
@@ -48,29 +78,7 @@ clean:
 
 # que.o: que.c
 # 	arm-linux-gcc -static -c -o $@ $< 
-# Draw.o: Draw.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-# GameInfo.o: GameInfo.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-# Init.o: Init.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-# Input.o: Input.c
-# 	arm-linux-gcc -static -c -o $@ $< 
 
-# Update.o: Update.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-
-# fpga_dot_interface.o: fpga_dot_interface.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-
-# fpga_led_interface.o: fpga_led_interface.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-
-# fpga_switch_interface.o: fpga_switch_interface.c
-# 	arm-linux-gcc -static -c -o $@ $< 
-
-# main.o: main.c
-# 	arm-linux-gcc -static -c -o $@ $<
 
 # install:
 # 	cp -a fpga_led_driver.ko /nfsroot
