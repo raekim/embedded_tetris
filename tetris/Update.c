@@ -143,35 +143,52 @@ void freeze_cur_block(Game *g) {
 }
 
 // 현재 게임 판을 라인 별로 확인해서 스코어를 계산하고, 게임보드 갱신
+// 한 번의 업데이트마다 한 줄씩만 득점할 것(프레임마다 업데이트가 계속 돌기 때문에 프레임마다 블록들이 처리되는것과 같다.)
 void handle_scoring(Game *g){
-	int score_line = 0;	// 득점한 라인 수 
-	int i,j;
-	int is_this_line_score;	 // 현재 라인이 득점 라인인가?
+	int i,j,t;
+	int flag = 0;	// 득점 라인을 찾기 위한 플래그
+	int score_line;	 // 없애야 할 라인
 
-	// 몇 줄 없앴나 확인한다(맨 밑줄에서부터 확인)
+	// 득점라인 확인(맨 밑줄에서부터 확인)
 	for(i=9; i>=0; --i){
-		is_this_line_score = 1;
+		flag = 1;
 		for(j=0; j<7; ++j){
 			if(g->game_board[i][j] == 0){
-				is_this_line_score = 0;
+				flag = 0;
 				break;
 			}
 		}
-		if(is_this_line_score == 1)	// 득점한 라인 수 하나 증가
-			score_line++;
+		if(flag == 1){	// 득점한 라인 하나 찾았음! 인덱스 i번째 라인임.
+			score_line = i;
+			break;
+		}
 	}
 
-	g->score += score_line*LINE_SCORE;	// score 없어진 줄 만큼 증가
-	// 게임보드 밑으로 땡기기
-	if(score_line > 0){
-		while(score_line--){	// 득점한 라인 수 만큼 전체 게임 보드를 밑으로 땡긴다
-			for(i=9; i>0; --i){
-				for(j=0; j<7; ++j)
-				g->game_board[i][j] = g->game_board[i-1][j];
+	g->score += flag*LINE_SCORE;	// score 증가
+	/* 득점 후 게임보드 갱신 */
+	if(flag){
+		// 전체 보드 한 줄씩 땡기기
+		for(i=9; i>0; --i){
+			for(j=0; j<7; ++j){
+				g->game_board[i][j] = g->game_board[i-1][j];	// 윗 라인의 상황을 현재라인으로 복사
 			}
+		}
+		// 맨 윗라인 공백으로 채우기
+		for(j=0; j<7; ++j)
+			g->game_board[0][j] = 0;
 
-			for(j=0; j<7; ++j)
-				g->game_board[0][j] = 0;	// 맨 윗라인 지우기
+		// 공중에 떠 있는 조각들 바닥으로 보내기
+		for(i=9; i>0; --i){
+			for(j=0; j<7; ++j){
+				if(g->game_board[i][j] == 1 && g->game_board[i+1][j] == 0){	// 공중에 떠 있는 조각 발견
+					t = i;
+					while(g->game_board[t+1][j] == 0){	// 조각 내리기
+						g->game_board[t+1][j] = g->game_board[t][j];
+						g->game_board[t][j] = 0;
+						t++;
+					}
+				}
+			}
 		}
 	}
 
